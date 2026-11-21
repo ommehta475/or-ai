@@ -2,7 +2,17 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
-import { FormEvent, KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  FormEvent,
+  KeyboardEvent,
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { createClient, Session, SupabaseClient } from '@supabase/supabase-js';
 import {
   AlertCircle,
@@ -22,12 +32,19 @@ import {
   Trash2,
   X,
 } from 'lucide-react';
-import { AdminModal } from './components/AdminModal';
 import { AuthMode, AuthScreen } from './components/AuthScreen';
 import { MarkdownMessage } from './components/MarkdownMessage';
 import { OrlixaMark } from './components/OrlixaMark';
-import { ReportModal } from './components/ReportModal';
-import { SettingsModal } from './components/SettingsModal';
+
+const AdminModal = lazy(() =>
+  import('./components/AdminModal').then((m) => ({ default: m.AdminModal }))
+);
+const ReportModal = lazy(() =>
+  import('./components/ReportModal').then((m) => ({ default: m.ReportModal }))
+);
+const SettingsModal = lazy(() =>
+  import('./components/SettingsModal').then((m) => ({ default: m.SettingsModal }))
+);
 import {
   ChatMessage,
   Conversation,
@@ -91,23 +108,27 @@ export default function App() {
     document.documentElement.classList.toggle('dark', isDark);
   }, [settings.theme]);
 
-  // Bootstrap config + health
+  // Bootstrap config + non-blocking health
   useEffect(() => {
     let active = true;
+    let unsubscribe: (() => void) | undefined;
+
+    fetch('/health')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((h: HealthStatus | null) => {
+        if (active && h) setHealth(h);
+      })
+      .catch(() => {});
+
     async function init() {
       try {
-        const [cfgResp, healthResp] = await Promise.all([
-          fetch('/api/config'),
-          fetch('/health').catch(() => null),
-        ]);
-        const cfg: PublicConfig = await cfgResp.json();
+        const preloaded = (window as unknown as { __ORLIXA_CONFIG__?: PublicConfig })
+          .__ORLIXA_CONFIG__;
+        const cfg: PublicConfig = preloaded
+          ? preloaded
+          : await fetch('/api/config').then((r) => r.json());
         if (!active) return;
         setConfig(cfg);
-
-        if (healthResp?.ok) {
-          const h: HealthStatus = await healthResp.json();
-          if (active) setHealth(h);
-        }
 
         if (cfg.supabaseConfigured) {
           const client = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey, {
@@ -132,9 +153,7 @@ export default function App() {
             setSession(nextSession ?? null);
           });
 
-          return () => {
-            sub.subscription.unsubscribe();
-          };
+          unsubscribe = () => sub.subscription.unsubscribe();
         } else {
           setAuthReady(true);
         }
@@ -153,6 +172,7 @@ export default function App() {
     init();
     return () => {
       active = false;
+      unsubscribe?.();
     };
   }, []);
 
@@ -923,35 +943,37 @@ export default function App() {
         </div>
       </main>
 
-      {settingsOpen && user && (
-        <SettingsModal
-          user={user}
-          settings={settings}
-          onClose={() => setSettingsOpen(false)}
-          onSave={handleSaveSettings}
-          onTestConnection={async (): Promise<OpenRouterTestResult> => {
-            const resp = await authFetch('/api/chat/test', { method: 'POST' });
-            const json = await resp.json().catch(() => ({}));
-            if (!resp.ok && !('connected' in json)) {
-              throw new Error(json.detail || 'Connection test failed.');
-            }
-            return json;
-          }}
-        />
-      )}
+      <Suspense fallback={null}>
+        {settingsOpen && user && (
+          <SettingsModal
+            user={user}
+            settings={settings}
+            onClose={() => setSettingsOpen(false)}
+            onSave={handleSaveSettings}
+            onTestConnection={async (): Promise<OpenRouterTestResult> => {
+              const resp = await authFetch('/api/chat/test', { method: 'POST' });
+              const json = await resp.json().catch(() => ({}));
+              if (!resp.ok && !('connected' in json)) {
+                throw new Error(json.detail || 'Connection test failed.');
+              }
+              return json;
+            }}
+          />
+        )}
 
-      {reportTarget && (
-        <ReportModal
-          conversationId={reportTarget.conversationId}
-          messageId={reportTarget.messageId}
-          onClose={() => setReportTarget(null)}
-          onSubmit={handleSubmitReport}
-        />
-      )}
+        {reportTarget && (
+          <ReportModal
+            conversationId={reportTarget.conversationId}
+            messageId={reportTarget.messageId}
+            onClose={() => setReportTarget(null)}
+            onSubmit={handleSubmitReport}
+          />
+        )}
 
-      {adminOpen && user?.role === 'admin' && (
-        <AdminModal accessToken={session.access_token} onClose={() => setAdminOpen(false)} />
-      )}
+        {adminOpen && user?.role === 'admin' && (
+          <AdminModal accessToken={session.access_token} onClose={() => setAdminOpen(false)} />
+        )}
+      </Suspense>
     </div>
   );
 }

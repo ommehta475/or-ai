@@ -402,6 +402,18 @@ async function startServer() {
     });
   });
 
+  app.get('/api/boot.js', (_req, res) => {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    const publicConfig = {
+      supabaseConfigured: isSupabaseConfigured,
+      supabaseUrl: isSupabaseConfigured ? SUPABASE_URL : '',
+      supabaseAnonKey: isSupabaseConfigured ? SUPABASE_ANON_KEY : '',
+      openrouterConfigured: isOpenRouterConfigured,
+    };
+    res.send(`window.__ORLIXA_CONFIG__ = ${JSON.stringify(publicConfig)};`);
+  });
+
   app.get('/api/config', async (_req, res) => {
     res.json({
       supabaseConfigured: isSupabaseConfigured,

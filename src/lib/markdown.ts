@@ -1,5 +1,4 @@
 import DOMPurify from 'dompurify';
-import hljs from 'highlight.js';
 import { marked } from 'marked';
 
 marked.setOptions({
@@ -15,9 +14,18 @@ export function renderSafeMarkdownHtml(markdown: string): string {
 }
 
 export function enhanceMarkdownContainer(container: HTMLElement): void {
-  container.querySelectorAll('pre code').forEach((block) => {
-    hljs.highlightElement(block as HTMLElement);
-  });
+  const codeBlocks = container.querySelectorAll('pre code');
+  if (codeBlocks.length > 0) {
+    import('highlight.js/lib/common')
+      .then(({ default: hljs }) => {
+        codeBlocks.forEach((block) => {
+          if (!block.classList.contains('hljs')) {
+            hljs.highlightElement(block as HTMLElement);
+          }
+        });
+      })
+      .catch(() => {});
+  }
 
   container.querySelectorAll('a').forEach((anchor) => {
     anchor.setAttribute('target', '_blank');
