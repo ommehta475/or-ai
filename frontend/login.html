@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In — ORLIXA AI</title>
+    <meta name="description" content="Sign in to ORLIXA AI by Orlixa Labs." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="login">
+    <main class="auth-shell">
+      <section class="auth-brand-panel" aria-label="ORLIXA AI Overview">
+        <div class="brand-lockup">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="24" height="24" rx="7" stroke="#38BDF8" stroke-width="2" />
+            <circle cx="14" cy="14" r="5" fill="#38BDF8" />
+          </svg>
+          <span>ORLIXA AI</span>
+        </div>
+
+        <div>
+          <h1 class="auth-brand-headline">Your AI. Your Ideas. Your Possibilities.</h1>
+          <p class="auth-brand-copy">
+            Private, streaming AI intelligence powered by OpenRouter API and hosted by Orlixa Labs.
+            Sign in to access your conversation history, saved preferences, and real-time workspace.
+          </p>
+        </div>
+
+        <div style="font-size: 13px; color: var(--text-muted);">
+          Developed by Orlixa Labs
+        </div>
+      </section>
+
+      <section class="auth-form-panel">
+        <div class="auth-card">
+          <div id="config-warning" class="auth-alert auth-alert-error" hidden>
+            Supabase configuration is missing. Copy <code>frontend/config.example.js</code> to
+            <code>frontend/config.js</code> and enter your <code>SUPABASE_URL</code>,
+            <code>SUPABASE_ANON_KEY</code>, and <code>BACKEND_API_URL</code>.
+          </div>
+
+          <div id="login-view">
+            <h2 class="auth-title">Welcome back</h2>
+            <p class="auth-subtitle">Sign in to your ORLIXA AI account.</p>
+
+            <div id="login-alert" class="auth-alert" hidden></div>
+
+            <form id="login-form">
+              <div class="field-group">
+                <label class="field-label" for="login-email">Email address</label>
+                <input
+                  id="login-email"
+                  class="field-input"
+                  type="email"
+                  required
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                />
+              </div>
+
+              <div class="field-group">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <label class="field-label" style="margin:0;" for="login-password">Password</label>
+                  <button type="button" id="show-forgot-btn" class="btn-link">Forgot password?</button>
+                </div>
+                <input
+                  id="login-password"
+                  class="field-input"
+                  type="password"
+                  required
+                  autocomplete="current-password"
+                  placeholder="Enter your password"
+                />
+              </div>
+
+              <button id="login-submit" class="btn-primary" type="submit">Sign in</button>
+            </form>
+
+            <p style="margin:20px 0 0; font-size:14px; color:var(--text-secondary); text-align:center;">
+              New to ORLIXA AI? <a href="./register.html">Create an account</a>
+            </p>
+          </div>
+
+          <div id="forgot-view" hidden>
+            <h2 class="auth-title">Reset password</h2>
+            <p class="auth-subtitle">Enter your account email to receive a recovery link.</p>
+
+            <div id="forgot-alert" class="auth-alert" hidden></div>
+
+            <form id="forgot-form">
+              <div class="field-group">
+                <label class="field-label" for="forgot-email">Email address</label>
+                <input
+                  id="forgot-email"
+                  class="field-input"
+                  type="email"
+                  required
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                />
+              </div>
+              <button id="forgot-submit" class="btn-primary" type="submit">Send reset link</button>
+            </form>
+
+            <p style="margin:20px 0 0; text-align:center;">
+              <button type="button" class="btn-link" data-back-login>Back to sign in</button>
+            </p>
+          </div>
+
+          <div id="reset-view" hidden>
+            <h2 class="auth-title">Choose a new password</h2>
+            <p class="auth-subtitle">Set a new password for your ORLIXA AI account.</p>
+
+            <div id="reset-alert" class="auth-alert" hidden></div>
+
+            <form id="reset-form">
+              <div class="field-group">
+                <label class="field-label" for="reset-password">New password</label>
+                <input
+                  id="reset-password"
+                  class="field-input"
+                  type="password"
+                  minlength="8"
+                  required
+                  autocomplete="new-password"
+                  placeholder="At least 8 characters"
+                />
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="reset-password-confirm">Confirm password</label>
+                <input
+                  id="reset-password-confirm"
+                  class="field-input"
+                  type="password"
+                  minlength="8"
+                  required
+                  autocomplete="new-password"
+                  placeholder="Repeat new password"
+                />
+              </div>
+              <button id="reset-submit" class="btn-primary" type="submit">Update password</button>
+            </form>
+
+            <p style="margin:20px 0 0; text-align:center;">
+              <button type="button" class="btn-link" data-back-login>Back to sign in</button>
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./config.js" onerror="window.ORLIXA_CONFIG = window.ORLIXA_CONFIG || {};"></script>
+    <script type="module" src="./auth.js"></script>
+  </body>
+</html>

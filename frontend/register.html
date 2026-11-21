@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account — ORLIXA AI</title>
+    <meta name="description" content="Register for an ORLIXA AI account by Orlixa Labs." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="register">
+    <main class="auth-shell">
+      <section class="auth-brand-panel" aria-label="ORLIXA AI Overview">
+        <div class="brand-lockup">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <rect x="2" y="2" width="24" height="24" rx="7" stroke="#38BDF8" stroke-width="2" />
+            <circle cx="14" cy="14" r="5" fill="#38BDF8" />
+          </svg>
+          <span>ORLIXA AI</span>
+        </div>
+
+        <div>
+          <h1 class="auth-brand-headline">Your AI. Your Ideas. Your Possibilities.</h1>
+          <p class="auth-brand-copy">
+            Create an account to start chatting with ORLIXA AI powered by OpenRouter API and
+            persistent Supabase conversation history.
+          </p>
+        </div>
+
+        <div style="font-size: 13px; color: var(--text-muted);">
+          Developed by Orlixa Labs
+        </div>
+      </section>
+
+      <section class="auth-form-panel">
+        <div class="auth-card">
+          <div id="config-warning" class="auth-alert auth-alert-error" hidden>
+            Supabase configuration is missing. Copy <code>frontend/config.example.js</code> to
+            <code>frontend/config.js</code> and enter your <code>SUPABASE_URL</code>,
+            <code>SUPABASE_ANON_KEY</code>, and <code>BACKEND_API_URL</code>.
+          </div>
+
+          <h2 class="auth-title">Create your account</h2>
+          <p class="auth-subtitle">Start using ORLIXA AI with persistent conversation history.</p>
+
+          <div id="register-alert" class="auth-alert" hidden></div>
+
+          <form id="register-form">
+            <div class="field-group">
+              <label class="field-label" for="register-name">Full name</label>
+              <input
+                id="register-name"
+                class="field-input"
+                type="text"
+                required
+                maxlength="120"
+                autocomplete="name"
+                placeholder="Alex Morgan"
+              />
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="register-email">Email address</label>
+              <input
+                id="register-email"
+                class="field-input"
+                type="email"
+                required
+                autocomplete="email"
+                placeholder="you@example.com"
+              />
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="register-password">Password</label>
+              <input
+                id="register-password"
+                class="field-input"
+                type="password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+                placeholder="At least 8 characters"
+              />
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="register-confirm">Confirm password</label>
+              <input
+                id="register-confirm"
+                class="field-input"
+                type="password"
+                minlength="8"
+                required
+                autocomplete="new-password"
+                placeholder="Repeat password"
+              />
+            </div>
+
+            <button id="register-submit" class="btn-primary" type="submit">Create account</button>
+          </form>
+
+          <p style="margin:20px 0 0; font-size:14px; color:var(--text-secondary); text-align:center;">
+            Already have an account? <a href="./login.html">Sign in</a>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="./config.js" onerror="window.ORLIXA_CONFIG = window.ORLIXA_CONFIG || {};"></script>
+    <script type="module" src="./auth.js"></script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "ORLIXA AI",
+  "description": "Production AI chat platform by Orlixa Labs powered by OpenRouter API, FastAPI, and Supabase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
