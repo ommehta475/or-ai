@@ -27,8 +27,8 @@
         <div>
           <h1 class="auth-brand-headline">Your AI. Your Ideas. Your Possibilities.</h1>
           <p class="auth-brand-copy">
-            Private, streaming AI intelligence powered by OpenRouter API and hosted by Orlixa Labs.
-            Sign in to access your conversation history, saved preferences, and real-time workspace.
+            A focused, private AI workspace by Orlixa Labs. Sign in to access your conversation
+            history and saved preferences.
           </p>
         </div>
 
@@ -69,14 +69,24 @@
                   <label class="field-label" style="margin:0;" for="login-password">Password</label>
                   <button type="button" id="show-forgot-btn" class="btn-link">Forgot password?</button>
                 </div>
-                <input
-                  id="login-password"
-                  class="field-input"
-                  type="password"
-                  required
-                  autocomplete="current-password"
-                  placeholder="Enter your password"
-                />
+                <div class="password-wrap">
+                  <input
+                    id="login-password"
+                    class="field-input"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle-btn"
+                    data-toggle-password="login-password"
+                    aria-label="Show password"
+                  >
+                    Show
+                  </button>
+                </div>
               </div>
 
               <button id="login-submit" class="btn-primary" type="submit">Sign in</button>
@@ -122,27 +132,48 @@
             <form id="reset-form">
               <div class="field-group">
                 <label class="field-label" for="reset-password">New password</label>
-                <input
-                  id="reset-password"
-                  class="field-input"
-                  type="password"
-                  minlength="8"
-                  required
-                  autocomplete="new-password"
-                  placeholder="At least 8 characters"
-                />
+                <div class="password-wrap">
+                  <input
+                    id="reset-password"
+                    class="field-input"
+                    type="password"
+                    minlength="8"
+                    required
+                    autocomplete="new-password"
+                    placeholder="At least 8 characters"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle-btn"
+                    data-toggle-password="reset-password"
+                    aria-label="Show password"
+                  >
+                    Show
+                  </button>
+                </div>
               </div>
               <div class="field-group">
                 <label class="field-label" for="reset-password-confirm">Confirm password</label>
-                <input
-                  id="reset-password-confirm"
-                  class="field-input"
-                  type="password"
-                  minlength="8"
-                  required
-                  autocomplete="new-password"
-                  placeholder="Repeat new password"
-                />
+                <div class="password-wrap">
+                  <input
+                    id="reset-password-confirm"
+                    class="field-input"
+                    type="password"
+                    minlength="8"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Repeat new password"
+                  />
+                  <button
+                    type="button"
+                    class="password-toggle-btn"
+                    data-toggle-password="reset-password-confirm"
+                    aria-label="Show confirm password"
+                  >
+                    Show
+                  </button>
+                </div>
+                <div id="reset-match-status" class="password-match-msg" aria-live="polite" hidden></div>
               </div>
               <button id="reset-submit" class="btn-primary" type="submit">Update password</button>
             </form>

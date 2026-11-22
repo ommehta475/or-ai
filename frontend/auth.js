@@ -15,7 +15,47 @@ function hideBanner(elementId) {
   if (el) el.hidden = true;
 }
 
+function setupPasswordToggles() {
+  document.querySelectorAll("[data-toggle-password]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetId = btn.getAttribute("data-toggle-password");
+      const input = targetId ? document.getElementById(targetId) : null;
+      if (!input) return;
+      const showing = input.type === "text";
+      input.type = showing ? "password" : "text";
+      btn.textContent = showing ? "Show" : "Hide";
+      btn.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+    });
+  });
+}
+
+function setupPasswordMatch(passwordId, confirmId, statusId) {
+  const pwdEl = document.getElementById(passwordId);
+  const confirmEl = document.getElementById(confirmId);
+  const statusEl = document.getElementById(statusId);
+  if (!pwdEl || !confirmEl || !statusEl) return;
+
+  const update = () => {
+    const pwd = pwdEl.value;
+    const confirm = confirmEl.value;
+    if (!confirm) {
+      statusEl.hidden = true;
+      statusEl.textContent = "";
+      statusEl.className = "password-match-msg";
+      return;
+    }
+    const matched = pwd.length > 0 && pwd === confirm;
+    statusEl.hidden = false;
+    statusEl.textContent = matched ? "Passwords match" : "Passwords do not match";
+    statusEl.className = `password-match-msg ${matched ? "match" : "mismatch"}`;
+  };
+
+  pwdEl.addEventListener("input", update);
+  confirmEl.addEventListener("input", update);
+}
+
 async function initAuthPages() {
+  setupPasswordToggles();
   const supabase = getSupabaseClient();
   const configBanner = document.getElementById("config-warning");
 
@@ -51,6 +91,7 @@ async function initAuthPages() {
   }
 
   if (page === "login") {
+    setupPasswordMatch("reset-password", "reset-password-confirm", "reset-match-status");
     const loginForm = document.getElementById("login-form");
     const forgotForm = document.getElementById("forgot-form");
     const resetForm = document.getElementById("reset-form");
@@ -152,6 +193,7 @@ async function initAuthPages() {
   }
 
   if (page === "register") {
+    setupPasswordMatch("register-password", "register-confirm", "register-match-status");
     const registerForm = document.getElementById("register-form");
     registerForm?.addEventListener("submit", async (e) => {
       e.preventDefault();

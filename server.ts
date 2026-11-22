@@ -1,14 +1,16 @@
 import dotenv from 'dotenv';
-import express, { Request, Response, NextFunction } from 'express';
+import express, { type Request, type Response, type NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const ENV_CANDIDATES = [
+  path.resolve(__dirname, '.env.local'),
+  path.resolve(__dirname, '.env.production'),
   path.resolve(__dirname, '.env'),
   path.resolve(__dirname, 'backend/.env'),
 ];
@@ -18,8 +20,21 @@ for (const envPath of foundEnvFiles) {
 }
 
 const PORT = Number(process.env.PORT || 3000);
-const SUPABASE_URL = (process.env.SUPABASE_URL || '').trim().replace(/\/+$/, '');
-const SUPABASE_ANON_KEY = (process.env.SUPABASE_ANON_KEY || '').trim();
+const SUPABASE_URL = (
+  process.env.SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  ''
+)
+  .trim()
+  .replace(/\/+$/, '');
+const SUPABASE_ANON_KEY = (
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_PUBLISHABLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  ''
+).trim();
 const SUPABASE_SERVICE_ROLE_KEY = (process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
 
 const OPENROUTER_API_KEY = (process.env.OPENROUTER_API_KEY || '').trim();

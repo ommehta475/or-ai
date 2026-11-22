@@ -706,3 +706,44 @@ a:focus-visible {
   border-radius: 14px;
   padding: 24px;
 }
+
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap .field-input {
+  padding-right: 42px;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.password-toggle-btn:hover {
+  color: var(--text-primary);
+}
+
+.password-match-msg {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.password-match-msg.match {
+  color: #34d399;
+}
+
+.password-match-msg.mismatch {
+  color: #f87171;
+}
+

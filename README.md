@@ -99,3 +99,28 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000
    ```
 2. Deploy the `frontend/` directory to **Cloudflare Pages** (Framework preset: *None*, Build output directory: `frontend`).
 3. Ensure `ALLOWED_ORIGINS` on your FastAPI backend includes your exact Cloudflare Pages URL (e.g., `https://orlixa-ai.pages.dev`).
+
+---
+
+## 5. Deploying the Downloaded Full-Stack App (Render, Railway, VPS, Cloud Run)
+
+Downloaded project archives do **not** contain your AI Studio runtime secrets. If you see **"Environment configuration required"** after deploying, configure your environment variables on the server:
+
+1. Copy `.env.example` to `.env` (or add these variables in your hosting provider's **Environment Variables** settings):
+   ```env
+   NODE_ENV=production
+   PORT=3000
+   SUPABASE_URL=https://your-project-ref.supabase.co
+   SUPABASE_ANON_KEY=your-supabase-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+   OPENROUTER_API_KEY=sk-or-v1-...
+   OPENROUTER_MODEL=nvidia/nemotron-3-ultra-550b-a55b:free
+   OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+   ```
+2. Install, build, and start the full-stack Node server (do **not** deploy `dist/` as static-only hosting, because `/api/chat/stream` and `/api/boot.js` are served by `server.ts`):
+   ```bash
+   npm install
+   npm run build
+   NODE_ENV=production npm start
+   ```
+

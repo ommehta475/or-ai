@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import { SupabaseClient } from '@supabase/supabase-js';
-import { AlertCircle, CheckCircle2, Lock, Mail, User } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 import { PublicConfig } from '../types';
 import { OrlixaMark } from './OrlixaMark';
 
@@ -25,13 +25,20 @@ export function AuthScreen({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
+  const hasConfirmInput = confirmPassword.length > 0;
+  const passwordsMatch = password.length > 0 && password === confirmPassword;
+
   const switchMode = (nextMode: AuthMode) => {
     setErrorMsg('');
     setSuccessMsg('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
     onModeChange(nextMode);
   };
 
@@ -118,28 +125,13 @@ export function AuthScreen({
             Your AI. Your Ideas. Your Possibilities.
           </h1>
           <p className="mt-5 text-base leading-relaxed text-slate-300 max-w-[48ch]">
-            A focused, private AI workspace engineered by Orlixa Labs. Powered by the OpenRouter API
-            with persistent Supabase conversation history and Row Level Security.
+            A focused, private AI workspace engineered by Orlixa Labs for fast reasoning, writing,
+            and code collaboration.
           </p>
-
-          <div className="mt-10 grid grid-cols-2 gap-6 pt-8 border-t border-slate-800/80">
-            <div>
-              <div className="font-display text-sm font-semibold text-white">Streaming OpenRouter</div>
-              <p className="mt-1 text-sm text-slate-400">
-                Real-time token streaming with stop and retry controls.
-              </p>
-            </div>
-            <div>
-              <div className="font-display text-sm font-semibold text-white">Isolated History</div>
-              <p className="mt-1 text-sm text-slate-400">
-                Every thread is protected by per-user Supabase RLS policies.
-              </p>
-            </div>
-          </div>
         </div>
 
         <div className="text-xs text-slate-500">
-          Developed by Orlixa Labs · Authentication powered by Supabase
+          Developed by Orlixa Labs
         </div>
       </section>
 
@@ -159,15 +151,14 @@ export function AuthScreen({
                 <span>Environment configuration required</span>
               </div>
               <p className="text-amber-200/90">
-                Authentication and database persistence are waiting on server environment variables:
-                <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">SUPABASE_URL</code>
-                and
-                <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">SUPABASE_ANON_KEY</code>
-                (plus
-                <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">OPENROUTER_API_KEY</code>
+                Downloaded builds do not include runtime secrets. Add
+                <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">SUPABASE_URL</code>,
+                <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">SUPABASE_ANON_KEY</code>,
+                <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">SUPABASE_SERVICE_ROLE_KEY</code>,
+                <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">OPENROUTER_API_KEY</code>,
                 and
                 <code className="mx-1 px-1 py-0.5 rounded bg-slate-900 text-sky-300">OPENROUTER_MODEL</code>
-                for AI responses).
+                to your hosting Environment Variables or root <code className="px-1 py-0.5 rounded bg-slate-900 text-sky-300">.env</code> file, then run the Node server (<code className="px-1 py-0.5 rounded bg-slate-900 text-sky-300">npm start</code>).
               </p>
             </div>
           )}
@@ -270,15 +261,24 @@ export function AuthScreen({
                   <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     id="password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     required
                     minLength={mode === 'login' ? 1 : 8}
                     autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={mode === 'login' ? 'Enter password' : 'At least 8 characters'}
-                    className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-slate-800 bg-[#070D19] text-sm text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                    className="w-full h-11 pl-10 pr-10 rounded-xl border border-slate-800 bg-[#070D19] text-sm text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPassword}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
             )}
@@ -295,16 +295,56 @@ export function AuthScreen({
                   <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   <input
                     id="confirm-password"
-                    type="password"
+                    type={showConfirmPassword ? 'text' : 'password'}
                     required
                     minLength={8}
                     autoComplete="new-password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Repeat password"
-                    className="w-full h-11 pl-10 pr-3.5 rounded-xl border border-slate-800 bg-[#070D19] text-sm text-white placeholder:text-slate-500 focus:border-sky-400 focus:outline-none"
+                    className={`w-full h-11 pl-10 pr-10 rounded-xl border bg-[#070D19] text-sm text-white placeholder:text-slate-500 focus:outline-none ${
+                      hasConfirmInput
+                        ? passwordsMatch
+                          ? 'border-emerald-500/70 focus:border-emerald-400'
+                          : 'border-rose-500/70 focus:border-rose-400'
+                        : 'border-slate-800 focus:border-sky-400'
+                    }`}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                    aria-pressed={showConfirmPassword}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-white cursor-pointer"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
+                {hasConfirmInput && (
+                  <p
+                    role="status"
+                    aria-live="polite"
+                    className={`mt-1.5 flex items-center gap-1.5 text-xs ${
+                      passwordsMatch ? 'text-emerald-400' : 'text-rose-400'
+                    }`}
+                  >
+                    {passwordsMatch ? (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                        <span>Passwords match</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>Passwords do not match</span>
+                      </>
+                    )}
+                  </p>
+                )}
               </div>
             )}
 

@@ -27,8 +27,8 @@
         <div>
           <h1 class="auth-brand-headline">Your AI. Your Ideas. Your Possibilities.</h1>
           <p class="auth-brand-copy">
-            Create an account to start chatting with ORLIXA AI powered by OpenRouter API and
-            persistent Supabase conversation history.
+            Create an account to start chatting with ORLIXA AI and keep your conversation history
+            organized in one private workspace.
           </p>
         </div>
 
@@ -78,28 +78,49 @@
 
             <div class="field-group">
               <label class="field-label" for="register-password">Password</label>
-              <input
-                id="register-password"
-                class="field-input"
-                type="password"
-                minlength="8"
-                required
-                autocomplete="new-password"
-                placeholder="At least 8 characters"
-              />
+              <div class="password-wrap">
+                <input
+                  id="register-password"
+                  class="field-input"
+                  type="password"
+                  minlength="8"
+                  required
+                  autocomplete="new-password"
+                  placeholder="At least 8 characters"
+                />
+                <button
+                  type="button"
+                  class="password-toggle-btn"
+                  data-toggle-password="register-password"
+                  aria-label="Show password"
+                >
+                  Show
+                </button>
+              </div>
             </div>
 
             <div class="field-group">
               <label class="field-label" for="register-confirm">Confirm password</label>
-              <input
-                id="register-confirm"
-                class="field-input"
-                type="password"
-                minlength="8"
-                required
-                autocomplete="new-password"
-                placeholder="Repeat password"
-              />
+              <div class="password-wrap">
+                <input
+                  id="register-confirm"
+                  class="field-input"
+                  type="password"
+                  minlength="8"
+                  required
+                  autocomplete="new-password"
+                  placeholder="Repeat password"
+                />
+                <button
+                  type="button"
+                  class="password-toggle-btn"
+                  data-toggle-password="register-confirm"
+                  aria-label="Show confirm password"
+                >
+                  Show
+                </button>
+              </div>
+              <div id="register-match-status" class="password-match-msg" aria-live="polite" hidden></div>
             </div>
 
             <button id="register-submit" class="btn-primary" type="submit">Create account</button>

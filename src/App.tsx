@@ -124,9 +124,40 @@ export default function App() {
       try {
         const preloaded = (window as unknown as { __ORLIXA_CONFIG__?: PublicConfig })
           .__ORLIXA_CONFIG__;
-        const cfg: PublicConfig = preloaded
-          ? preloaded
-          : await fetch('/api/config').then((r) => r.json());
+        let cfg: PublicConfig | null = preloaded ?? null;
+
+        if (!cfg) {
+          const resp = await fetch('/api/config').catch(() => null);
+          if (resp?.ok) {
+            const contentType = resp.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+              cfg = await resp.json().catch(() => null);
+            }
+          }
+        }
+
+        if (!cfg || !cfg.supabaseConfigured) {
+          const viteUrl = (import.meta.env.VITE_SUPABASE_URL || '').trim();
+          const viteAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || '').trim();
+          if (viteUrl && viteAnonKey) {
+            cfg = {
+              supabaseConfigured: true,
+              supabaseUrl: viteUrl,
+              supabaseAnonKey: viteAnonKey,
+              openrouterConfigured: cfg?.openrouterConfigured ?? false,
+            };
+          }
+        }
+
+        if (!cfg) {
+          cfg = {
+            supabaseConfigured: false,
+            supabaseUrl: '',
+            supabaseAnonKey: '',
+            openrouterConfigured: false,
+          };
+        }
+
         if (!active) return;
         setConfig(cfg);
 
