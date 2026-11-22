@@ -373,21 +373,34 @@ async function startServer() {
   app.set('trust proxy', 1);
   app.use(express.json({ limit: '1mb' }));
 
-  // Strict CORS restricted to configured origins (plus same-origin requests)
+  // Support same-origin, reverse-proxy hosts, explicit ALLOWED_ORIGINS, or any domain when ALLOWED_ORIGINS is unset
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (origin) {
       const normalized = origin.replace(/\/+$/, '');
-      const hostOrigin = req.headers.host ? `${req.protocol}://${req.headers.host}` : '';
+      const fwdProto = String(req.headers['x-forwarded-proto'] || req.protocol || 'https')
+        .split(',')[0]
+        .trim();
+      const rawHost = String(req.headers['x-forwarded-host'] || req.headers.host || '')
+        .split(',')[0]
+        .trim();
+      const hostHttps = rawHost ? `https://${rawHost}` : '';
+      const hostHttp = rawHost ? `http://${rawHost}` : '';
+      const hostProto = rawHost ? `${fwdProto}://${rawHost}` : '';
+      const appUrl = (process.env.APP_URL || '').trim().replace(/\/+$/, '');
+      const wildcardAllowed = ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes('*');
+
       const isAllowed =
+        wildcardAllowed ||
         ALLOWED_ORIGINS.includes(normalized) ||
-        normalized === hostOrigin ||
-        normalized === (process.env.APP_URL || '').replace(/\/+$/, '');
+        normalized === hostProto ||
+        normalized === hostHttps ||
+        normalized === hostHttp ||
+        (Boolean(appUrl) && normalized === appUrl);
 
       if (isAllowed) {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Vary', 'Origin');
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type');
       }
@@ -1128,11 +1141,21 @@ async function startServer() {
     }
   });
 
-  if (process.env.NODE_ENV === 'production') {
-    const distDir = path.resolve(__dirname, 'dist');
+  const distDir = path.resolve(__dirname, 'dist');
+  const distIndex = path.join(distDir, 'index.html');
+  const isDevLifecycle =
+    process.env.npm_lifecycle_event === 'dev' || process.env.NODE_ENV === 'development';
+  const useProductionStatic =
+    process.env.NODE_ENV === 'production' || (!isDevLifecycle && fs.existsSync(distIndex));
+
+  if (useProductionStatic) {
     app.use(express.static(distDir));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.join(distDir, 'index.html'));
+    app.get('*', (req, res) => {
+      if (req.path.startsWith('/api/')) {
+        res.status(404).json({ detail: 'API endpoint not found.' });
+        return;
+      }
+      res.sendFile(distIndex);
     });
   } else {
     const { createServer: createViteServer } = await import('vite');

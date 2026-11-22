@@ -84,7 +84,7 @@ class Settings(BaseSettings):
     openrouter_app_name: str = Field(default="ORLIXA AI")
 
     ai_temperature: float = Field(default=0.7, ge=0.0, le=2.0)
-    allowed_origins: str = Field(default="http://localhost:3000")
+    allowed_origins: str = Field(default="*")
     rate_limit_requests_per_minute: int = Field(default=20, ge=1, le=300)
     max_message_length: int = Field(default=4000, ge=100, le=32000)
     max_output_tokens: int = Field(default=2048, ge=64, le=16384)

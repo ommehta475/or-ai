@@ -6,7 +6,7 @@ export function getRuntimeConfig() {
   return {
     supabaseUrl: (cfg.SUPABASE_URL || "").trim(),
     supabaseAnonKey: (cfg.SUPABASE_ANON_KEY || "").trim(),
-    backendApiUrl: (cfg.BACKEND_API_URL || "").trim().replace(/\/+$/, ""),
+    backendApiUrl: (cfg.BACKEND_API_URL || window.location.origin || "").trim().replace(/\/+$/, ""),
   };
 }
 
